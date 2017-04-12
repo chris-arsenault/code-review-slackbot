@@ -1,11 +1,12 @@
 module.exports = (robot) ->
 
   robot.respond /enr-cr[\ ]?(\d*)?[\ ]?([@a-z\.\ ]*)?$/i, (res) ->
-
-
     count = 1
     if (res.match[1] != undefined)
       count = res.match[1]
+      unless isFinite(count)
+        count = 1
+        extra_requestor = res.match[1].split(' ').map((n) -> n.trim())
 
     # no default
     if (res.match[2] != undefined)
@@ -24,11 +25,13 @@ module.exports = (robot) ->
     if extra_requestor != undefined
       while extra_requestor.length != 0
         extra = extra_requestor.shift()
+        if extra.indexOf('@') == -1
+          extra = '@' + extra
 
         # make sure the name is spelled good
-        if list.indexOf(extra) != -1 || list.indexOf('@' + extra) != -1
+        if list.indexOf(extra) != -1
           reviewers.push(extra)
-          list.splice(list.indexOf(extra))
+          list.splice(list.indexOf(extra), 1)
           list.push(extra)
 
     # get next count reviewers
@@ -49,7 +52,8 @@ module.exports = (robot) ->
 
     response = "Assigned Reviewer: "
     for reviewer in reviewers
-      response += "@#{reviewer}, "
+      response += "#{reviewer}, "
+    res.send response
 
     robot.brain.set('enr-cr', list)
 
@@ -101,7 +105,7 @@ module.exports = (robot) ->
         if name.indexOf('@') == -1
           name = '@' + name
         if cr_list.indexOf(name) != -1
-          cr_list.splice(cr_list.indexOf(name))
+          cr_list.splice(cr_list.indexOf(name), 1)
 
     robot.brain.set('enr-cr', cr_list)
 
