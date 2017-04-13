@@ -21,29 +21,38 @@ module.exports = (robot) ->
       additional_reviewers = robot.cleanNames(options.additional_reviewers, list)
       while additional_reviewers.length != 0
         extra = additional_reviewers.shift()
-        console.log extra
-        console.log additional_reviewers
         reviewers.push(extra)
         list.splice(list.indexOf(extra), 1)
         list.push(extra)
 
     # get next count reviewers
+    options.igonored_reviewers.push(options.requestor)
+    ignored_reviewers = robot.cleanNames(options.igonored_reviewers, list)
+    if ignored_reviewers.count > list.count
+      res.send "Too many people ignored!"
+      return
+
     while options.count != 0
-      # swap requestor
-      if list[0] == options.requestor
-        list[0] = list[1]
-        list[1] = options.requestor
+      # inorder list of available people
+      available_reviewers = robot.subtractArray(list, ignored_reviewers)
+      if available_reviewers.count < 1
+        res.send "No available reviewers!"
+        return
+
+      next_reviewer = available_reviewers[0]
+
+      # remove them
+      list.splice(list.indexOf(next_reviewer), 1)
 
       # get the reviewer
-      reviewers.push(list[0])
+      reviewers.push(next_reviewer)
 
       # put reviewer on back
-      list.push(list.shift())
+      list.push(next_reviewer)
 
       # next request
       options.count--
 
-    # add @ to notify user
     robot.brain.set('enr-cr', list)
     res.send robot.printList("Assigned Reviewers: ", reviewers, true)
 
@@ -104,6 +113,7 @@ module.exports = (robot) ->
       requestor: "#{res.message.user.name}"
       count: 1
       error: false
+      igonored_reviewers: []
     }
     return options if res.match[2] == undefined
 

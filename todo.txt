@@ -1,4 +1,4 @@
-1. add pairing
-2. undo
+1. undo
+2. add back simple syntax
 3. history
 4. stats
