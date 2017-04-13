@@ -97,7 +97,6 @@ module.exports = (robot) ->
   robot.usageString = () ->
     "enr-cr -n <number_of_random_reviewers> -i <list_of_ignored_users> -a <list_of_additional_reviewers>"
 
-
   robot.parseOptions = (res) ->
     if (res.match[1] == undefined && res.match[2] == undefined)
       return robot.parseArgs(res)
@@ -150,8 +149,8 @@ module.exports = (robot) ->
       robot.resetDataStructure()
 
   robot.resetDataStructure = ->
-      data =["chris.arsenault", "josh.cohen", "jenpen", "joehunt", "starr", "cameron.ivery", "khoi", "jackburum", "siva"]
-      robot.brain.set('enr-cr', data)
+    data =["chris.arsenault", "josh.cohen", "jenpen", "joehunt", "starr", "cameron.ivery", "khoi", "jackburum", "siva"]
+    robot.brain.set('enr-cr', data)
 
 
   robot.printList = (prefix, list, tagUsers = false) ->
@@ -159,7 +158,7 @@ module.exports = (robot) ->
       list = list.map (l) -> "@#{l}"
     else
       # splice in a random character to prevent slack for tagging everyone
-      list = list.map (l) -> l.substring(0, 1) + '_' + l.substring(1)
+      list = list.map (l) -> l #l.substring(0, 1) + '_' + l.substring(1)
 
     response = prefix
     for l in list
