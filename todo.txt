@@ -1,0 +1,6 @@
+1. refactor
+2. better arg parsing
+3. add pairing
+4. undo
+5. history
+6. stats
