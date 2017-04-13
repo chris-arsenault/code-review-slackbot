@@ -18,7 +18,7 @@ module.exports = (robot) ->
     if list == null || list == []
       list = ["@chris.arsenault", "@josh.cohen", "@jenpen", "@joehunt", "@starr", "@cameron.ivery", "@khoi", "@jackburum", "@siva"]
 
-    requestor = res.message.user.name
+    requestor = "@#{res.message.user.name}"
 
     reviewers = []
     #add extra reviewers and put them on the back if there are any
