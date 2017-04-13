@@ -56,6 +56,7 @@ module.exports = (robot) ->
 
     robot.brain.set('enr-cr', list)
     res.send robot.printList("Assigned Reviewers: ", reviewers, true)
+    console.log 'enr-cr ended'
 
 
   robot.hear /enr-cr-set ([@a-z. ]*)+$/i, (res) ->
@@ -65,6 +66,7 @@ module.exports = (robot) ->
 
     robot.brain.set('enr-cr', cr_list)
     res.send robot.printList("New Order: ", cr_list)
+    console.log 'enr-cr-set ended'
 
   robot.hear /enr-cr-add ([@a-z. ]*)+$/i, (res) ->
     console.log 'enr-cr-add called'
@@ -75,6 +77,7 @@ module.exports = (robot) ->
 
     robot.brain.set('enr-cr', cr_list)
     res.send robot.printList("New Order: ", cr_list)
+    console.log 'enr-cr-add ended'
 
   robot.hear /enr-cr-remove ([@a-z. ]*)+$/i, (res) =>
     console.log 'enr-cr-remove called'
@@ -85,18 +88,21 @@ module.exports = (robot) ->
 
     robot.brain.set('enr-cr', cr_list)
     res.send robot.printList("New Order: ", cr_list)
+    console.log 'enr-cr-remove ended'
 
   robot.hear /enr-cr-order/i, (res) ->
     console.log 'enr-cr-order called'
     robot.seedDataStructure()
     cr_list = robot.brain.get('enr-cr')
     res.send robot.printList("Current Order: ", cr_list)
+    console.log 'enr-cr-order ended'
 
   robot.hear /enr-cr-reset$/i, (res) ->
     console.log 'enr-cr-reset called'
     robot.resetDataStructure()
     cr_list = robot.brain.get('enr-cr')
     res.send robot.printList("New Order: ", cr_list)
+    console.log 'enr-cr-reset ended'
 
 #### HELPERS ###
 
@@ -155,7 +161,7 @@ module.exports = (robot) ->
       robot.resetDataStructure()
 
   robot.resetDataStructure = ->
-    data =["chris.arsenault", "josh.cohen", "jenpen", "joehunt", "starr", "cameron.ivey", "khoi", "jackburum", "siva"]
+    data =["chris.arsenault", "josh.cohen", "jenpen", "joehunt", "starr", "cameron.ivey", "khoi", "jackburum", "siva", "dchang"]
     robot.brain.set('enr-cr', data)
 
 
