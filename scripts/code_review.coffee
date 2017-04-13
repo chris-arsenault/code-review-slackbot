@@ -10,8 +10,10 @@ module.exports = (robot) ->
     #add extra reviewers and put them on the back if there are any
     if options.additional_reviewers != undefined
       additional_reviewers = robot.cleanNames(options.additional_reviewers, list)
-      while additional_reviewers != 0
+      while additional_reviewers.length != 0
         extra = additional_reviewers.shift()
+        console.log extra
+        console.log additional_reviewers
         reviewers.push(extra)
         list.splice(list.indexOf(extra), 1)
         list.push(extra)
@@ -87,7 +89,7 @@ module.exports = (robot) ->
       additional_reviewers = res.match[2].split(' ').map((n) -> n.trim())
 
     return {
-      requestor: "@#{res.message.user.name}"
+      requestor: "#{res.message.user.name}"
       count: count
       additional_reviewers: additional_reviewers
     }
