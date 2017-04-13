@@ -4,16 +4,9 @@ Usage: type a command into any channel that the Excella Hobot bot has been added
 
 ## Pick Reviewers ##
 
-`enr-cr <num_reviewers> <additional_reviewers>`
+`enr-cr -n <number_of_random_reviewers> -i <list_of_ignored_users> -a <list_of_additional_reviewers>`
 
-Both num_reviewers and additional_reviewers are optional, but if you have num_reviewers it has to come first
-
-**examples**å
-* 1 random reviewer: `enr-cr`
-* 2 random reviewers: `enr-cr 2`
-* 1 random, and joe : `enr-cr joehunt`
-* 2 random, and joe and chris: `enr-cr 2 @joehunt chris.arsenault`
-
+All options are optional, list of ignored users not yet implemented
 
 **Users must be..**
 1. in the current CR list

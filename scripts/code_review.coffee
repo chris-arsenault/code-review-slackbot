@@ -1,8 +1,17 @@
 module.exports = (robot) ->
 
-  robot.respond /enr-cr[\ ]?(\d*)?[\ ]?([@a-z\.\ ]*)?$/i, (res) ->
+  # /enr-cr[\ ]?(\d*)?[\ ]?([@a-z\.\ ]*)?$/i
+  robot.respond /enr-cr([ ])?([\-@a-z. 0-9]*)?$/i, (res) ->
     robot.seedDataStructure()
     options = robot.parseOptions(res)
+
+    if !options
+      return
+
+    if options.error
+      res.send robot.usageString()
+      return
+
 
     list = robot.brain.get('enr-cr')
 
@@ -12,41 +21,50 @@ module.exports = (robot) ->
       additional_reviewers = robot.cleanNames(options.additional_reviewers, list)
       while additional_reviewers.length != 0
         extra = additional_reviewers.shift()
-        console.log extra
-        console.log additional_reviewers
         reviewers.push(extra)
         list.splice(list.indexOf(extra), 1)
         list.push(extra)
 
     # get next count reviewers
+    options.igonored_reviewers.push(options.requestor)
+    ignored_reviewers = robot.cleanNames(options.igonored_reviewers, list)
+    if ignored_reviewers.count > list.count
+      res.send "Too many people ignored!"
+      return
+
     while options.count != 0
-      # swap requestor
-      if list[0] == options.requestor
-        list[0] = list[1]
-        list[1] = options.requestor
+      # inorder list of available people
+      available_reviewers = robot.subtractArray(list, ignored_reviewers)
+      if available_reviewers.count < 1
+        res.send "No available reviewers!"
+        return
+
+      next_reviewer = available_reviewers[0]
+
+      # remove them
+      list.splice(list.indexOf(next_reviewer), 1)
 
       # get the reviewer
-      reviewers.push(list[0])
+      reviewers.push(next_reviewer)
 
       # put reviewer on back
-      list.push(list.shift())
+      list.push(next_reviewer)
 
       # next request
       options.count--
 
-    # add @ to notify user
     robot.brain.set('enr-cr', list)
     res.send robot.printList("Assigned Reviewers: ", reviewers, true)
 
 
-  robot.respond /enr-cr-set ([@a-z\.\ ]*)+$/i, (res) ->
+  robot.respond /enr-cr-set ([@a-z. ]*)+$/i, (res) ->
     robot.seedDataStructure()
     cr_list = robot.cleanNames(res.match[1].split(' '))
 
     robot.brain.set('enr-cr', cr_list)
     res.send robot.printList("New Order: ", cr_list)
 
-  robot.respond /enr-cr-add ([@a-z\.\ ]*)+$/i, (res) ->
+  robot.respond /enr-cr-add ([@a-z. ]*)+$/i, (res) ->
     robot.seedDataStructure()
     cr_list = robot.brain.get('enr-cr')
     names = robot.cleanNames(res.match[1].split(' '))
@@ -55,7 +73,7 @@ module.exports = (robot) ->
     robot.brain.set('enr-cr', cr_list)
     res.send robot.printList("New Order: ", cr_list)
 
-  robot.respond /enr-cr-remove ([@a-z\.\ ]*)+$/i, (res) =>
+  robot.respond /enr-cr-remove ([@a-z. ]*)+$/i, (res) =>
     robot.seedDataStructure()
     cr_list = robot.brain.get('enr-cr')
     names = robot.cleanNames(res.match[1].split(' '), cr_list)
@@ -76,23 +94,55 @@ module.exports = (robot) ->
 
 #### HELPERS ###
 
+  robot.usageString = () ->
+    "enr-cr -n <number_of_random_reviewers> -i <list_of_ignored_users> -a <list_of_additional_reviewers>"
+
+
   robot.parseOptions = (res) ->
-    count = 1
-    if (res.match[1] != undefined)
-      count = res.match[1]
-      unless isFinite(count)
-        count = 1
-        additional_reviewers = res.match[1].split(' ').map((n) -> n.trim())
+    if (res.match[1] == undefined && res.match[2] == undefined)
+      return robot.parseArgs(res)
 
-    # no default
-    if (res.match[2] != undefined)
-      additional_reviewers = res.match[2].split(' ').map((n) -> n.trim())
+    if (res.match[1] != ' ' || res.match[2] == undefined)
+      return false
 
-    return {
+    return robot.parseArgs(res)
+
+  robot.parseArgs = (res) ->
+
+    options = {
       requestor: "#{res.message.user.name}"
-      count: count
-      additional_reviewers: additional_reviewers
+      count: 1
+      error: false
+      igonored_reviewers: []
     }
+    return options if res.match[2] == undefined
+
+    args = res.match[2].split(' ')
+    commands = {}
+    while args.length != 0
+      key = args.shift()
+      if key[0] != '-'
+        options.error = true
+      value = ""
+      while args.length != 0 && args[0][0] != '-'
+        value += args.shift()
+        value += " "
+      value.substring(-1)
+      commands[key] = value
+
+    for k,v of commands
+      switch k
+        when '-n'
+          if isFinite(v)
+            options.count = parseInt(v)
+          else
+            options.error = true
+        when '-a'
+          options.additional_reviewers = v.split(' ')
+        when '-i'
+          options.igonored_reviewers = v.split(' ')
+
+    return options
 
   robot.seedDataStructure = ->
     data = robot.brain.get('enr-cr')
