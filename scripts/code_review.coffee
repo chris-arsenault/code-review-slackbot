@@ -9,16 +9,12 @@ module.exports = (robot) ->
     reviewers = []
     #add extra reviewers and put them on the back if there are any
     if options.additional_reviewers != undefined
-      while options.additional_reviewers.length != 0
-        extra = options.additional_reviewers.shift()
-        if extra.indexOf('@') == -1
-          extra = '@' + extra
-
-        # make sure the name is spelled good
-        if list.indexOf(extra) != -1
-          reviewers.push(extra)
-          list.splice(list.indexOf(extra), 1)
-          list.push(extra)
+      additional_reviewers = robot.cleanNames(options.additional_reviewers, list)
+      while additional_reviewers != 0
+        extra = additional_reviewers.shift()
+        reviewers.push(extra)
+        list.splice(list.indexOf(extra), 1)
+        list.push(extra)
 
     # get next count reviewers
     while options.count != 0
@@ -36,8 +32,9 @@ module.exports = (robot) ->
       # next request
       options.count--
 
+    # add @ to notify user
     robot.brain.set('enr-cr', list)
-    res.send robot.printList("Assigned Reviewers: ", reviewers)
+    res.send robot.printList("Assigned Reviewers: ", reviewers, true)
 
 
   robot.respond /enr-cr-set ([@a-z\.\ ]*)+$/i, (res) ->
@@ -70,6 +67,11 @@ module.exports = (robot) ->
     cr_list = robot.brain.get('enr-cr')
     res.send robot.printList("Current Order: ", cr_list)
 
+  robot.respond /enr-cr-reset$/i, (res) ->
+    robot.resetDataStructure()
+    cr_list = robot.brain.get('enr-cr')
+    res.send robot.printList("New Order: ", cr_list)
+
 #### HELPERS ###
 
   robot.parseOptions = (res) ->
@@ -93,11 +95,20 @@ module.exports = (robot) ->
   robot.seedDataStructure = ->
     data = robot.brain.get('enr-cr')
     if data == null
-      data =["@chris.arsenault", "@josh.cohen", "@jenpen", "@joehunt", "@starr", "@cameron.ivery", "@khoi", "@jackburum", "@siva"]
+      robot.resetDataStructure()
+
+  robot.resetDataStructure = ->
+      data =["chris.arsenault", "josh.cohen", "jenpen", "joehunt", "starr", "cameron.ivery", "khoi", "jackburum", "siva"]
       robot.brain.set('enr-cr', data)
 
 
-  robot.printList = (prefix, list) ->
+  robot.printList = (prefix, list, tagUsers = false) ->
+    if tagUsers
+      list = list.map (l) -> "@#{l}"
+    else
+      # splice in a random character to prevent slack for tagging everyone
+      list = list.map (l) -> l.substring(0, 1) + '_' + l.substring(1)
+
     response = prefix
     for l in list
       response += (l + ", ")
@@ -110,8 +121,8 @@ module.exports = (robot) ->
     cleaned_names = []
     for name in names
       if !!name
-        if name.indexOf('@') == -1
-          name = '@' + name
+        if name.indexOf('@') != -1
+          name = name.substring(1)
         if allowedValues != null && allowedValues.indexOf(name) != -1
           cleaned_names.push(name)
         else
