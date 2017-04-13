@@ -134,7 +134,7 @@ module.exports = (robot) ->
       switch k
         when '-n'
           if isFinite(v)
-            options.count = v
+            options.count = parseInt(v)
           else
             options.error = true
         when '-a'
