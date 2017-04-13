@@ -1,7 +1,7 @@
 module.exports = (robot) ->
 
   # /enr-cr[\ ]?(\d*)?[\ ]?([@a-z\.\ ]*)?$/i
-  robot.respond /enr-cr([ ])?([\-@a-z. 0-9]*)?$/i, (res) ->
+  robot.hear /enr-cr([ ])?([\-@a-z. 0-9]*)?$/i, (res) ->
     robot.seedDataStructure()
     options = robot.parseOptions(res)
 
@@ -57,14 +57,14 @@ module.exports = (robot) ->
     res.send robot.printList("Assigned Reviewers: ", reviewers, true)
 
 
-  robot.respond /enr-cr-set ([@a-z. ]*)+$/i, (res) ->
+  robot.hear /enr-cr-set ([@a-z. ]*)+$/i, (res) ->
     robot.seedDataStructure()
     cr_list = robot.cleanNames(res.match[1].split(' '))
 
     robot.brain.set('enr-cr', cr_list)
     res.send robot.printList("New Order: ", cr_list)
 
-  robot.respond /enr-cr-add ([@a-z. ]*)+$/i, (res) ->
+  robot.hear /enr-cr-add ([@a-z. ]*)+$/i, (res) ->
     robot.seedDataStructure()
     cr_list = robot.brain.get('enr-cr')
     names = robot.cleanNames(res.match[1].split(' '))
@@ -73,7 +73,7 @@ module.exports = (robot) ->
     robot.brain.set('enr-cr', cr_list)
     res.send robot.printList("New Order: ", cr_list)
 
-  robot.respond /enr-cr-remove ([@a-z. ]*)+$/i, (res) =>
+  robot.hear /enr-cr-remove ([@a-z. ]*)+$/i, (res) =>
     robot.seedDataStructure()
     cr_list = robot.brain.get('enr-cr')
     names = robot.cleanNames(res.match[1].split(' '), cr_list)
@@ -82,12 +82,12 @@ module.exports = (robot) ->
     robot.brain.set('enr-cr', cr_list)
     res.send robot.printList("New Order: ", cr_list)
 
-  robot.respond /enr-cr-order/i, (res) ->
+  robot.hear /enr-cr-order/i, (res) ->
     robot.seedDataStructure()
     cr_list = robot.brain.get('enr-cr')
     res.send robot.printList("Current Order: ", cr_list)
 
-  robot.respond /enr-cr-reset$/i, (res) ->
+  robot.hear /enr-cr-reset$/i, (res) ->
     robot.resetDataStructure()
     cr_list = robot.brain.get('enr-cr')
     res.send robot.printList("New Order: ", cr_list)
@@ -158,7 +158,7 @@ module.exports = (robot) ->
       list = list.map (l) -> "@#{l}"
     else
       # splice in a random character to prevent slack for tagging everyone
-      list = list.map (l) -> l #l.substring(0, 1) + '_' + l.substring(1)
+      list = list.map (l) -> l.substring(0, 1) + '_' + l.substring(1)
 
     response = prefix
     for l in list

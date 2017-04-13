@@ -1,9 +1,9 @@
 {
-  "name": "testerman",
+  "name": "enr-cr-codereview",
   "version": "0.0.0",
   "private": true,
   "author": "Chris Arsenault <chris.arsenault.ctr@excella.com>",
-  "description": "A simple helpful robot for your Company",
+  "description": "Provides code review rotation for everify mod",
   "dependencies": {
     "hubot": "^2.19.0",
     "hubot-diagnostics": "0.0.1",
