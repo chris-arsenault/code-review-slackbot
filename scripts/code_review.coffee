@@ -2,6 +2,7 @@ module.exports = (robot) ->
 
   # /enr-cr[\ ]?(\d*)?[\ ]?([@a-z\.\ ]*)?$/i
   robot.hear /enr-cr([ ])?([\-@a-z. 0-9]*)?$/i, (res) ->
+    console.log 'enr-cr called'
     robot.seedDataStructure()
     options = robot.parseOptions(res)
 
@@ -58,6 +59,7 @@ module.exports = (robot) ->
 
 
   robot.hear /enr-cr-set ([@a-z. ]*)+$/i, (res) ->
+    console.log 'enr-cr-set called'
     robot.seedDataStructure()
     cr_list = robot.cleanNames(res.match[1].split(' '))
 
@@ -65,6 +67,7 @@ module.exports = (robot) ->
     res.send robot.printList("New Order: ", cr_list)
 
   robot.hear /enr-cr-add ([@a-z. ]*)+$/i, (res) ->
+    console.log 'enr-cr-add called'
     robot.seedDataStructure()
     cr_list = robot.brain.get('enr-cr')
     names = robot.cleanNames(res.match[1].split(' '))
@@ -74,6 +77,7 @@ module.exports = (robot) ->
     res.send robot.printList("New Order: ", cr_list)
 
   robot.hear /enr-cr-remove ([@a-z. ]*)+$/i, (res) =>
+    console.log 'enr-cr-remove called'
     robot.seedDataStructure()
     cr_list = robot.brain.get('enr-cr')
     names = robot.cleanNames(res.match[1].split(' '), cr_list)
@@ -83,11 +87,13 @@ module.exports = (robot) ->
     res.send robot.printList("New Order: ", cr_list)
 
   robot.hear /enr-cr-order/i, (res) ->
+    console.log 'enr-cr-order called'
     robot.seedDataStructure()
     cr_list = robot.brain.get('enr-cr')
     res.send robot.printList("Current Order: ", cr_list)
 
   robot.hear /enr-cr-reset$/i, (res) ->
+    console.log 'enr-cr-reset called'
     robot.resetDataStructure()
     cr_list = robot.brain.get('enr-cr')
     res.send robot.printList("New Order: ", cr_list)
@@ -149,7 +155,7 @@ module.exports = (robot) ->
       robot.resetDataStructure()
 
   robot.resetDataStructure = ->
-    data =["chris.arsenault", "josh.cohen", "jenpen", "joehunt", "starr", "cameron.ivery", "khoi", "jackburum", "siva"]
+    data =["chris.arsenault", "josh.cohen", "jenpen", "joehunt", "starr", "cameron.ivey", "khoi", "jackburum", "siva"]
     robot.brain.set('enr-cr', data)
 
 
