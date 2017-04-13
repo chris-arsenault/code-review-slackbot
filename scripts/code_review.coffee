@@ -50,66 +50,63 @@ module.exports = (robot) ->
       # next request
       count--
 
-    response = "Assigned Reviewer: "
-    for reviewer in reviewers
-      response += "#{reviewer}, "
-    res.send response
-
     robot.brain.set('enr-cr', list)
+    res.send robot.printList("Assigned Reviewers: ", reviewers)
+
 
   robot.respond /enr-cr-set ([@a-z\.\ ]*)+$/i, (res) ->
-    names = res.match[1].split(' ')
-    cr_list = []
-    for name in names
-      if !!name
-        if name.indexOf('@') == -1
-          name = '@' + name
-        cr_list.push(name)
+    cr_list = robot.cleanNames(res.match[1].split(' '))
 
     robot.brain.set('enr-cr', cr_list)
-
-    response = "New Order: "
-    for l in cr_list
-      response += (l + ", ")
-    res.send response
-
-  robot.respond /enr-cr-order/i, (res) ->
-    cr_list = robot.brain.get('enr-cr')
-
-    response = "Current Order: "
-    for l in cr_list
-      response += (l + ", ")
-    res.send response
+    res.send robot.printList("New Order: ", cr_list)
 
   robot.respond /enr-cr-add ([@a-z\.\ ]*)+$/i, (res) ->
     cr_list = robot.brain.get('enr-cr')
-    names = res.match[1].split(' ')
-    for name in names
-      if !!name
-        if name.indexOf('@') == -1
-          name = '@' + name
-        cr_list.push(name)
+    names = robot.cleanNames(res.match[1].split(' '))
+    cr_list = robot.addArray(cr_list, names)
 
     robot.brain.set('enr-cr', cr_list)
+    res.send robot.printList("New Order: ", cr_list)
 
-    response = "New Order: "
-    for l in cr_list
-      response += (l + ", ")
-    res.send response
-
-  robot.respond /enr-cr-remove ([@a-z\.\ ]*)+$/i, (res) ->
+  robot.respond /enr-cr-remove ([@a-z\.\ ]*)+$/i, (res) =>
     cr_list = robot.brain.get('enr-cr')
-    names = res.match[1].split(' ')
+    names = robot.cleanNames(res.match[1].split(' '), cr_list)
+    cr_list = robot.subtractArray(cr_list, names)
+
+    robot.brain.set('enr-cr', cr_list)
+    res.send robot.printList("New Order: ", cr_list)
+
+  robot.respond /enr-cr-order/i, (res) ->
+    cr_list = robot.brain.get('enr-cr')
+    res.send robot.printList("Current Order: ", cr_list)
+
+#### HELPERS ###
+
+  robot.printList = (prefix, list) ->
+    response = prefix
+    for l in list
+      response += (l + ", ")
+    if list.count > 0
+      response = response.substring(-1)
+    return response
+
+
+  robot.cleanNames = (names, allowedValues = null) ->
+    cleaned_names = []
     for name in names
       if !!name
         if name.indexOf('@') == -1
           name = '@' + name
-        if cr_list.indexOf(name) != -1
-          cr_list.splice(cr_list.indexOf(name), 1)
+        if allowedValues != null && allowedValues.indexOf(name) != -1
+          cleaned_names.push(name)
+        else
+          cleaned_names.push(name)
+    return cleaned_names
 
-    robot.brain.set('enr-cr', cr_list)
+  robot.subtractArray = (lhs, rhs) ->
+    return lhs.filter( (n) -> rhs.indexOf(n) == -1)
 
-    response = "New Order: "
-    for l in cr_list
-      response += (l + ", ")
-    res.send response
+  robot.addArray = (lhs, rhs) ->
+    for r in rhs
+      lhs.push(r)
+    return lhs
