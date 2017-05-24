@@ -14,7 +14,7 @@ module.exports = (robot) ->
       return
 
 
-    list = robot.brain.get('enr-cr')
+    list = robot.getList()
 
     reviewers = []
     #add extra reviewers and put them on the back if there are any
@@ -54,7 +54,7 @@ module.exports = (robot) ->
       # next request
       options.count--
 
-    robot.brain.set('enr-cr', list)
+    robot.setList(list)
     res.send robot.printList("Assigned Reviewers: ", reviewers, true)
     console.log 'enr-cr ended'
 
@@ -64,43 +64,43 @@ module.exports = (robot) ->
     robot.seedDataStructure()
     cr_list = robot.cleanNames(res.match[1].split(' '))
 
-    robot.brain.set('enr-cr', cr_list)
+    robot.setList(cr_list)
     res.send robot.printList("New Order: ", cr_list)
     console.log 'enr-cr-set ended'
 
   robot.hear /enr-cr-add ([@a-z. ]*)+$/i, (res) ->
     console.log 'enr-cr-add called'
     robot.seedDataStructure()
-    cr_list = robot.brain.get('enr-cr')
+    cr_list = robot.getList()
     names = robot.cleanNames(res.match[1].split(' '))
     cr_list = robot.addArray(cr_list, names)
 
-    robot.brain.set('enr-cr', cr_list)
+    robot.setList(cr_list)
     res.send robot.printList("New Order: ", cr_list)
     console.log 'enr-cr-add ended'
 
   robot.hear /enr-cr-remove ([@a-z. ]*)+$/i, (res) =>
     console.log 'enr-cr-remove called'
     robot.seedDataStructure()
-    cr_list = robot.brain.get('enr-cr')
+    cr_list = robot.getList()
     names = robot.cleanNames(res.match[1].split(' '), cr_list)
     cr_list = robot.subtractArray(cr_list, names)
 
-    robot.brain.set('enr-cr', cr_list)
+    robot.setList(cr_list)
     res.send robot.printList("New Order: ", cr_list)
     console.log 'enr-cr-remove ended'
 
   robot.hear /enr-cr-order/i, (res) ->
     console.log 'enr-cr-order called'
     robot.seedDataStructure()
-    cr_list = robot.brain.get('enr-cr')
+    cr_list = robot.getList()
     res.send robot.printList("Current Order: ", cr_list)
     console.log 'enr-cr-order ended'
 
   robot.hear /enr-cr-reset$/i, (res) ->
     console.log 'enr-cr-reset called'
     robot.resetDataStructure()
-    cr_list = robot.brain.get('enr-cr')
+    cr_list = robot.getList()
     res.send robot.printList("New Order: ", cr_list)
     console.log 'enr-cr-reset ended'
 
@@ -120,8 +120,9 @@ module.exports = (robot) ->
 
   robot.parseArgs = (res) ->
 
+    robot.requestor = "#{res.message.user.name}"
     options = {
-      requestor: "#{res.message.user.name}"
+      requestor: robot.requestor
       count: 1
       error: false
       igonored_reviewers: []
@@ -155,14 +156,20 @@ module.exports = (robot) ->
 
     return options
 
+  robot.getList = ->
+    robot.brain.get('enr-cr')
+
+  robot.setList = (list) ->
+    robot.brain.set('enr-cr', list)
+
   robot.seedDataStructure = ->
-    data = robot.brain.get('enr-cr')
+    data = robot.getList()
     if data == null
       robot.resetDataStructure()
 
   robot.resetDataStructure = ->
     data =["chris.arsenault", "josh.cohen", "jenpen", "joehunt", "starr", "cameron.ivey", "khoi", "jackburum", "siva", "dchang"]
-    robot.brain.set('enr-cr', data)
+    robot.setList(data)
 
 
   robot.printList = (prefix, list, tagUsers = false) ->
