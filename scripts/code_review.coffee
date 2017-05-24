@@ -168,7 +168,7 @@ module.exports = (robot) ->
     requestedList = lists.filter (list) ->
       list.some (name) ->
         name == robot.requestor
-    requestedList[0].slice(0) # this clones the array
+    requestedList[0].slice(0) # this clones the array, it was doing weird things
 
 
   robot.setList = (list) ->
@@ -182,14 +182,13 @@ module.exports = (robot) ->
     robot.brain.set('enr-cr', lists)
 
   robot.seedDataStructure = ->
-    data = robot.getList()
+    data = robot.brain.get('enr-cr')
     if data == null
       robot.resetDataStructure()
 
   robot.resetDataStructure = ->
     data =[["chris.arsenault", "josh.cohen", "dchang", "starr", "khoi"], ["jenpen", "joehunt", "cameron.ivey", "jackburum", "siva", "justdroo"]]
     robot.brain.set('enr-cr', data)
-
 
   robot.printList = (prefix, list, tagUsers = false) ->
     if tagUsers
