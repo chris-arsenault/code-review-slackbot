@@ -2,6 +2,7 @@ module.exports = (robot) ->
 
   # /enr-cr[\ ]?(\d*)?[\ ]?([@a-z\.\ ]*)?$/i
   robot.hear /enr-cr([ ])?([\-@a-z. 0-9]*)?$/i, (res) ->
+    robot.startRequest(res)
     console.log 'enr-cr called'
     robot.seedDataStructure()
     options = robot.parseOptions(res)
@@ -60,6 +61,7 @@ module.exports = (robot) ->
 
 
   robot.hear /enr-cr-set ([@a-z. ]*)+$/i, (res) ->
+    robot.startRequest(res)
     console.log 'enr-cr-set called'
     robot.seedDataStructure()
     cr_list = robot.cleanNames(res.match[1].split(' '))
@@ -69,6 +71,7 @@ module.exports = (robot) ->
     console.log 'enr-cr-set ended'
 
   robot.hear /enr-cr-add ([@a-z. ]*)+$/i, (res) ->
+    robot.startRequest(res)
     console.log 'enr-cr-add called'
     robot.seedDataStructure()
     cr_list = robot.getList()
@@ -80,6 +83,7 @@ module.exports = (robot) ->
     console.log 'enr-cr-add ended'
 
   robot.hear /enr-cr-remove ([@a-z. ]*)+$/i, (res) =>
+    robot.startRequest(res)
     console.log 'enr-cr-remove called'
     robot.seedDataStructure()
     cr_list = robot.getList()
@@ -91,6 +95,7 @@ module.exports = (robot) ->
     console.log 'enr-cr-remove ended'
 
   robot.hear /enr-cr-order/i, (res) ->
+    robot.startRequest(res)
     console.log 'enr-cr-order called'
     robot.seedDataStructure()
     cr_list = robot.getList()
@@ -98,6 +103,7 @@ module.exports = (robot) ->
     console.log 'enr-cr-order ended'
 
   robot.hear /enr-cr-reset$/i, (res) ->
+    robot.startRequest(res)
     console.log 'enr-cr-reset called'
     robot.resetDataStructure()
     cr_list = robot.getList()
@@ -105,6 +111,8 @@ module.exports = (robot) ->
     console.log 'enr-cr-reset ended'
 
 #### HELPERS ###
+  robot.startRequest = (res) ->
+    robot.requestor = "#{res.message.user.name}"
 
   robot.usageString = () ->
     "enr-cr -n <number_of_random_reviewers> -i <list_of_ignored_users> -a <list_of_additional_reviewers>"
@@ -120,7 +128,6 @@ module.exports = (robot) ->
 
   robot.parseArgs = (res) ->
 
-    robot.requestor = "#{res.message.user.name}"
     options = {
       requestor: robot.requestor
       count: 1
@@ -157,10 +164,22 @@ module.exports = (robot) ->
     return options
 
   robot.getList = ->
-    robot.brain.get('enr-cr')
+    lists = robot.brain.get('enr-cr')
+    requestedList = lists.filter (list) ->
+      list.some (name) ->
+        name == robot.requestor
+    requestedList[0].slice(0) # this clones the array
+
 
   robot.setList = (list) ->
-    robot.brain.set('enr-cr', list)
+    lists = robot.brain.get('enr-cr')
+    updateList = lists.filter (list) ->
+      list.some (name) ->
+        name == robot.requestor
+
+    index = lists.indexOf(updateList[0])
+    lists[index] = list
+    robot.brain.set('enr-cr', lists)
 
   robot.seedDataStructure = ->
     data = robot.getList()
@@ -168,8 +187,8 @@ module.exports = (robot) ->
       robot.resetDataStructure()
 
   robot.resetDataStructure = ->
-    data =["chris.arsenault", "josh.cohen", "jenpen", "joehunt", "starr", "cameron.ivey", "khoi", "jackburum", "siva", "dchang"]
-    robot.setList(data)
+    data =[["chris.arsenault", "josh.cohen", "dchang", "starr", "khoi"], ["jenpen", "joehunt", "cameron.ivey", "jackburum", "siva", "justdroo"]]
+    robot.brain.set('enr-cr', data)
 
 
   robot.printList = (prefix, list, tagUsers = false) ->
