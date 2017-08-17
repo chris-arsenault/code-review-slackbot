@@ -1,5 +1,5 @@
 module.exports = (robot) ->
-  robot.hear /divvy-up([ ])?([a-z. 0-9]*)?([\-@_a-z. ]*)*$/i, (res) ->
+  robot.hear /divvy-up([ ])?([a-z. 0-9,_,&,!,@,#,\$,%,\^,\*,\(,\)]*)?([\-@_a-z. ]*)*$/i, (res) ->
 
     robot.requestor = "#{res.message.user.name}"
     console.log("divvy-up called")
