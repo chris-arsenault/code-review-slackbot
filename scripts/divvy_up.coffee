@@ -39,10 +39,6 @@ module.exports = (robot) ->
 
     members.concat(added)
 
-  robot.shuffleArray = (array) ->
-    return array.sort () =>
-      Math.random() - 0.5
-
   robot.getItems = (res) ->
     if res.match[2] == undefined
       return []
@@ -78,11 +74,3 @@ module.exports = (robot) ->
       robot.assign(items, teamMembers, assignedItems, itemIndex)
 
     assignedItems
-
-  robot.flattenArray = (array) ->
-    array.reduce (a, b) ->
-      a.concat(b)
-
-  robot.getValues = (object) ->
-    Object.keys(object).map (key) ->
-      object[key]
