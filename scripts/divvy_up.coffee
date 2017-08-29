@@ -1,11 +1,13 @@
 module.exports = (robot) ->
-  robot.hear /divvy-up([ ])?([a-z. 0-9,_,&,!,@,#,\$,%,\^,\*,\(,\)]*)?([\-@_a-z. ]*)*$/i, (res) ->
+  robot.hear /divvy-up([ ])?([a-z. 0-9,_,&,!,@,#,\$,%,\^,\*,\(,\)]*)?([\-@_a-z. 0-9]*)*$/i, (res) ->
 
-    robot.requestor = "#{res.message.user.name}"
     console.log("divvy-up called")
 
+    robot.requestor = "#{res.message.user.name}"
+    robot.setTeamMembers()
+
     options = robot.getOptions(res)
-    teamMembers = robot.getTeamMembers(res, options.ignoredTeamMembers, options.addedTeamMembers)
+    teamMembers = robot.getTeamMembers(res, options.ignoredTeamMembers, options.addedTeamMembers, options.teams)
     items = robot.getItems(res)
 
     randomizedItems = robot.shuffleArray(items)
@@ -16,28 +18,48 @@ module.exports = (robot) ->
 
     console.log 'divvy-up ended'
 
+  robot.setTeamMembers = ->
+    teamMembers = {
+      team_1: ['Brian', 'Drew', 'Jack', 'Joe', 'Starr'],
+      team_2: ['Cameron', 'Dane', 'Hugh', 'Jen', 'Siva'],
+      team_3: ['Daniel', 'David', 'Khoi', 'Glenn', 'Josh']
+    }
+    robot.brain.set('teamMembers', teamMembers)
+
   robot.getOptions = (res) ->
     if res.match[3] == undefined
       return {}
     allOptions = res.match[3].split("-").splice(1)
     ignoredTeamMembers = []
     addedTeamMembers = []
+    teams = []
     allOptions.forEach (o) ->
       if o[0] == "i"
-        ignoredTeamMembers = ignoredTeamMembers.concat(o.substring(1).split(" ").splice(1))
+        ignoredTeamMembers = ignoredTeamMembers.concat(o.substring(1).split(" ").filter( (word) => return word != "" ))
       else if o[0] == "a"
-        addedTeamMembers = addedTeamMembers.concat(o.substring(1).split(" ").splice(1))
+        addedTeamMembers = addedTeamMembers.concat(o.substring(1).split(" ").filter( (word) => return word != "" ))
+      else if o[0] == "t"
+        teams = teams.concat(o.substring(1).split(" ").filter( (word) => return word != "" ))
 
-    { "ignoredTeamMembers" : ignoredTeamMembers, "addedTeamMembers" : addedTeamMembers }
+    { "ignoredTeamMembers" : ignoredTeamMembers, "addedTeamMembers" : addedTeamMembers, "teams": teams}
 
-  robot.getTeamMembers = (res, ignored = [], added = []) ->
-    members = robot.getList(res)
+  robot.getTeamMembers = (res, ignored = [], added = [], teams = []) ->
+    allTeamMembers = robot.brain.get('teamMembers')
+    requestedMembers = []
+
+    if teams.length > 0
+      teams.forEach (team) ->
+        requestedMembers = requestedMembers.concat(allTeamMembers[team])
+    else
+      requestedMembers = robot.getValues(allTeamMembers)
+      requestedMembers = robot.flattenArray(requestedMembers)
+
     ignored.forEach (ignoredMember) ->
-      index = members.indexOf(ignoredMember)
+      index = requestedMembers.indexOf(ignoredMember)
       if index != -1
-        members.splice(index, 1)
+        requestedMembers.splice(index, 1)
 
-    members.concat(added)
+    requestedMembers.concat(added)
 
   robot.getItems = (res) ->
     if res.match[2] == undefined
