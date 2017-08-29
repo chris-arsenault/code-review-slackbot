@@ -20,9 +20,9 @@ module.exports = (robot) ->
 
   robot.setTeamMembers = ->
     teamMembers = {
-      team_1: ['Brian', 'Drew', 'Jack', 'Joe', 'Starr'],
-      team_2: ['Cameron', 'Dane', 'Hugh', 'Jen', 'Siva'],
-      team_3: ['Daniel', 'David', 'Khoi', 'Glenn', 'Josh']
+      team_1: ['brian.palladino', 'justdroo', 'jackburum', 'joehunt', 'starr'],
+      team_2: ['cameron.ivey', 'daneweber', 'hugh.gardiner', 'jenpen', 'siva'],
+      team_3: ['daniel.herndon', 'dchang', 'khoi', 'glenn.espinosa', 'josh.cohen']
     }
     robot.brain.set('teamMembers', teamMembers)
 
@@ -36,8 +36,12 @@ module.exports = (robot) ->
     allOptions.forEach (o) ->
       if o[0] == "i"
         ignoredTeamMembers = ignoredTeamMembers.concat(o.substring(1).split(" ").filter( (word) => return word != "" ))
+        ignoredTeamMembers.forEach (ignoredMember, index) ->
+          ignoredTeamMembers[index] = ignoredMember.replace('@', '')
       else if o[0] == "a"
         addedTeamMembers = addedTeamMembers.concat(o.substring(1).split(" ").filter( (word) => return word != "" ))
+        addedTeamMembers.forEach (addedMember, index) ->
+          addedTeamMembers[index] = addedMember.replace('@', '')
       else if o[0] == "t"
         teams = teams.concat(o.substring(1).split(" ").filter( (word) => return word != "" ))
 
@@ -72,7 +76,7 @@ module.exports = (robot) ->
       return "No items given!"
 
     for k, v of assignedItems
-      assignmentString += k + ": " + v.toString(', ') + "\n"
+      assignmentString += '@' + k + ": " + v.toString(', ') + "\n"
     assignmentString
 
   robot.assign = (items, teamMembers, assignedItems={}, itemIndex=0) ->
