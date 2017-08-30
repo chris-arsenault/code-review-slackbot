@@ -1,4 +1,7 @@
 module.exports = (robot) ->
+  robot.hear /^divvy-up$/,  (res) ->
+    robot.divvyUpHelpResponse(res)
+
   robot.hear /divvy-up([ ])+([a-z. 0-9,_,&,!,@,#,\$,%,\^,\*,\(,\)]*)?([\-@_a-z. 0-9]*)*$/i, (res) ->
 
     console.log("divvy-up called")
@@ -14,14 +17,22 @@ module.exports = (robot) ->
     randomizedMembers = robot.shuffleArray(teamMembers)
 
     assignedItems = robot.assign(randomizedItems, randomizedMembers)
-    res.send "Assignments \n" + robot.printAssignments(assignedItems) + "\n\n" + robot.printTeams(options.teams)
+
+    if Object.keys(assignedItems).length == 0
+      robot.divvyUpHelpResponse(res)
+    else
+      res.send "Assignments \n" + robot.printAssignments(assignedItems) + "\n\n" + robot.printTeams(options.teams)
 
     console.log 'divvy-up ended'
 
   robot.hear /divvy-up-help$/i, (res) ->
-    helpTest = "\nAll assignments are random.\nAll lists are space delimited.\nIf no teams are given with the -t option then it will draw team members from all teams.\n"
+    robot.divvyUpHelpResponse(res)
+
+  robot.divvyUpHelpResponse = (res) ->
+    startHelpMessage = "Need help using divvy-up?\n\n"
     usageString = "Usage:\ndivvy-up <list of items> -i <team members to ignore> -a <list of team members to add (one time only, not remembered)> -t <list of teams to pull users from>\n"
-    res.send usageString + helpTest
+    helpText = "\nAll assignments are random.\nAll lists are space delimited.\nIf no teams are given with the -t option then it will draw team members from all teams.\n"
+    res.send startHelpMessage + usageString + helpText
 
   robot.setTeamMembers = ->
     teamMembers = {
@@ -77,9 +88,6 @@ module.exports = (robot) ->
 
   robot.printAssignments = (assignedItems) ->
     assignmentString = ""
-    if Object.keys(assignedItems).length == 0
-      return "No items given!"
-
     for k, v of assignedItems
       assignmentString += '@' + k + ": " + v.toString(', ') + "\n"
     assignmentString
