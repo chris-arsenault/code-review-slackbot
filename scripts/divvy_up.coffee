@@ -1,5 +1,5 @@
 module.exports = (robot) ->
-  robot.hear /divvy-up([ ])?([a-z. 0-9,_,&,!,@,#,\$,%,\^,\*,\(,\)]*)?([\-@_a-z. 0-9]*)*$/i, (res) ->
+  robot.hear /divvy-up([ ])+([a-z. 0-9,_,&,!,@,#,\$,%,\^,\*,\(,\)]*)?([\-@_a-z. 0-9]*)*$/i, (res) ->
 
     console.log("divvy-up called")
 
@@ -17,6 +17,11 @@ module.exports = (robot) ->
     res.send "Assignments \n" + robot.printAssignments(assignedItems)
 
     console.log 'divvy-up ended'
+
+  robot.hear /divvy-up-help$/i, (res) ->
+    helpTest = "\nAll assignments are random.\nAll lists are space delimited.\nIf no teams are given with the -t option then it will draw team members from all teams.\n"
+    usageString = "Usage:\ndivvy-up <list of items> -i <team members to ignore> -a <list of team members to add (one time only, not remembered)> -t <list of teams to pull users from>\n"
+    res.send usageString + helpTest
 
   robot.setTeamMembers = ->
     teamMembers = {
