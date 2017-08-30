@@ -57,3 +57,17 @@ Wipes the old cr list and sets it too the list of usernames, in that order
 
 **Note: There is no checking if a username is valid**
 
+# Divvy Up Bot
+
+## Assign tasks to users
+
+`divvy-up <list of items> -i <team members to ignore> -a <list of team members to add (one time only, not remembered)> -t <list of teams to pull users from>`
+
+* All assignments are random.
+* All lists are space delimited.
+* If no teams are given with the -t option then it will draw team members from all teams.
+
+## Help Text
+`divvy-up-help`
+
+* Displays this helpful documentation.
