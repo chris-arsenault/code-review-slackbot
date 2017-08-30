@@ -187,7 +187,11 @@ module.exports = (robot) ->
       robot.resetDataStructure()
 
   robot.resetDataStructure = ->
-    data =[["chris.arsenault", "josh.cohen", "dchang", "starr", "khoi"], ["jenpen", "joehunt", "cameron.ivey", "jackburum", "siva", "justdroo"]]
+    data =[
+      ['brian.palladino', 'justdroo', 'jackburum', 'joehunt', 'starr'],
+      ['cameron.ivey', 'daneweber', 'hugh.gardiner', 'jenpen', 'siva'],
+      ['daniel.herndon', 'dchang', 'khoi', 'glenn.espinosa', 'josh.cohen']
+    ]
     robot.brain.set('enr-cr', data)
 
   robot.printList = (prefix, list, tagUsers = false) ->
