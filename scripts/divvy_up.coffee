@@ -14,7 +14,7 @@ module.exports = (robot) ->
     randomizedMembers = robot.shuffleArray(teamMembers)
 
     assignedItems = robot.assign(randomizedItems, randomizedMembers)
-    res.send "Assignments \n" + robot.printAssignments(assignedItems)
+    res.send "Assignments \n" + robot.printAssignments(assignedItems) + "\n\n" + robot.printTeams(options.teams)
 
     console.log 'divvy-up ended'
 
@@ -83,6 +83,18 @@ module.exports = (robot) ->
     for k, v of assignedItems
       assignmentString += '@' + k + ": " + v.toString(', ') + "\n"
     assignmentString
+
+  robot.printTeams = (teams) ->
+    teamsString = "Teams included in this divvy up:\n"
+    allTeamMembers = robot.brain.get('teamMembers')
+
+    if teams == undefined || teams == "" || teams.length == 0
+      teams = Object.keys(allTeamMembers)
+
+    teams.forEach (team) ->
+      teamsString += team + ": " + allTeamMembers[team].join(', ') + "\n"
+
+    return teamsString
 
   robot.assign = (items, teamMembers, assignedItems={}, itemIndex=0) ->
     teamMembers.forEach (member) ->
