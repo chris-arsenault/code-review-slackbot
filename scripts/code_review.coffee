@@ -188,9 +188,11 @@ module.exports = (robot) ->
 
   robot.resetDataStructure = ->
     data =[
-      ['brian.palladino', 'justdroo', 'jackburum', 'joehunt', 'starr'],
-      ['cameron.ivey', 'daneweber', 'hugh.gardiner', 'jenpen', 'siva'],
-      ['daniel.herndon', 'dchang', 'khoi', 'glenn.espinosa', 'josh.cohen']
+      ['brian.palladino', 'cameron.ivey', 'daniel.herndon',
+      'justdroo', 'daneweber', 'dchang',
+      'jackburum', 'hugh.gardiner', 'khoi',
+      'joehunt', 'jenpen', 'glenn.espinosa',
+      'starr', 'siva', 'josh.cohen']
     ]
     robot.brain.set('enr-cr', data)
 

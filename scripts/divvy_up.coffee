@@ -36,9 +36,9 @@ module.exports = (robot) ->
 
   robot.setTeamMembers = ->
     teamMembers = {
-      team_1: ['brian.palladino', 'justdroo', 'jackburum', 'joehunt', 'starr'],
-      team_2: ['cameron.ivey', 'daneweber', 'hugh.gardiner', 'jenpen', 'siva'],
-      team_3: ['daniel.herndon', 'dchang', 'khoi', 'glenn.espinosa', 'josh.cohen']
+      fauxPas: ['brian.palladino', 'justdroo', 'jackburum', 'joehunt', 'starr'],
+      bitsPlease: ['cameron.ivey', 'daneweber', 'hugh.gardiner', 'jenpen', 'siva'],
+      bigSillies: ['daniel.herndon', 'dchang', 'khoi', 'glenn.espinosa', 'josh.cohen']
     }
     robot.brain.set('teamMembers', teamMembers)
 
