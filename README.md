@@ -71,3 +71,8 @@ Wipes the old cr list and sets it too the list of usernames, in that order
 `divvy-up-help`
 
 * Displays this helpful documentation.
+
+## Development
+Get your own test slack account and create a hubot api key in the slack "Manage Apps" section.
+Run this in the project directory.
+`HUBOT_SLACK_TOKEN=< Your Token > ./bin/hubot --adapter slack`
