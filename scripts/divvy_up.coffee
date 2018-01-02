@@ -36,7 +36,7 @@ module.exports = (robot) ->
 
   robot.setTeamMembers = ->
     teamMembers = {
-      fauxPas: ['brian.palladino', 'justdroo', 'jackburum', 'joehunt', 'starr'],
+      fauxPas: ['brian.palladino', 'justdroo', 'joehunt', 'starr'],
       bitsPlease: ['cameron.ivey', 'daneweber', 'hugh.gardiner', 'jenpen', 'siva'],
       bigSillies: ['daniel.herndon', 'dchang', 'khoi', 'glenn.espinosa', 'josh.cohen']
     }

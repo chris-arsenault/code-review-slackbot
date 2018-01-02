@@ -190,7 +190,7 @@ module.exports = (robot) ->
     data =[
       ['brian.palladino', 'cameron.ivey', 'daniel.herndon',
       'justdroo', 'daneweber', 'dchang',
-      'jackburum', 'hugh.gardiner', 'khoi',
+      'hugh.gardiner', 'khoi',
       'joehunt', 'jenpen', 'glenn.espinosa',
       'starr', 'siva', 'josh.cohen']
     ]
