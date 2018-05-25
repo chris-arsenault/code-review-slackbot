@@ -1,5 +1,5 @@
 module.exports = (robot) ->
-  robot.respond /andon$/i, (res) ->
+  robot.hear /andon$/i, (res) ->
     console.log 'andon called'
 
     url = "https://maker.ifttt.com/trigger/lights_on/with/key/dI-HX-mjviMAz715B5ahqae5XJ1oM_hQg6ttG_UA0HP"
