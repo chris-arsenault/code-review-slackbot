@@ -1,6 +1,6 @@
 module.exports = (robot) ->
   robot.hear /andon$/i, (msg) ->
-    msg.send msg.message.room
+    msg.send msg.message
     # if msg.message.room == '#faux_pas'
     #   robot.lights_on()
 
