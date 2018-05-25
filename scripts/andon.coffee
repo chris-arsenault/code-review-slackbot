@@ -1,7 +1,7 @@
 module.exports = (robot) ->
   robot.hear /andon$/i, (msg) ->
-    msg.send JSON.stringify(msg.message)
-    # if msg.message.room == '#faux_pas'
+    if msg.message.room == 'G6WUAFP2S'
+      msg.send "WORKING"
     #   robot.lights_on()
 
   robot.hear /andoff$/i, (msg) ->
