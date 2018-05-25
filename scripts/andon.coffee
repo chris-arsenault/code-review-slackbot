@@ -1,10 +1,10 @@
 module.exports = (robot) ->
   robot.hear /andon$/i, (msg) ->
-    if msg.room == 'faux_pas'
+    if msg.message.room == 'faux_pas'
       robot.lights_on()
 
   robot.hear /andoff$/i, (msg) ->
-    if msg.room == 'faux_pas'
+    if msg.message.room == 'faux_pas'
       robot.lights_off()
 
   robot.lights_on ()->
