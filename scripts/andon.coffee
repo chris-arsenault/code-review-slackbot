@@ -2,6 +2,7 @@ module.exports = (robot) ->
   robot.hear /andon$/i, (msg) ->
     if msg.message.room == 'G6WUAFP2S'
       robot.lights_on(msg)
+      setTimeout robot.lights_off, 5000
 
   robot.hear /andoff$/i, (msg) ->
     if msg.message.room == 'G6WUAFP2S'
