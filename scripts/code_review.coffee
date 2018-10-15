@@ -82,7 +82,7 @@ module.exports = (robot) ->
     res.send robot.printList("New Order: ", cr_list)
     console.log 'enr-cr-add ended'
 
-  robot.hear /enr-cr-remove ([@a-z. ]*)+$/i, (res) =>
+  robot.hear /enr-cr-remove ([@a-z. -]*)+$/i, (res) =>
     robot.startRequest(res)
     console.log 'enr-cr-remove called'
     robot.seedDataStructure()
